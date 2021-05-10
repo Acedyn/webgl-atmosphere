@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import sunVertexShader from '../shader/sun.vs'
-import sunFragmentShader from '../shader/sun.fs'
+import sunVertexShader from '../shader/sun.vert'
+import sunFragmentShader from '../shader/sun.frag'
 
 export default class PlanetarySystem extends THREE.Group {
     constructor() {

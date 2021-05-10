@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import PlanetarySystem from "../scene/PlanetarySystem"
+import Player from "./player"
 
 
 export default class Game {
@@ -25,7 +26,7 @@ export default class Game {
         this.scene.add(this.planetarySystem)
 
         // Camera
-        this.camera = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height)
+        this.camera = new Player(50, this.sizes.width / this.sizes.height)
         this.camera.position.z = 3
         this.scene.add(this.camera)
 
@@ -45,12 +46,22 @@ export default class Game {
         // Methods
         ////////////////////////////////////////
 
+        this.computeDeltaTime = () => {
+            if (typeof this.dt === "undefined") {
+                this.dt = 0;
+                this.time = Date.now();
+            } else {
+                this.dt = Date.now() - this.time
+                this.time = Date.now();
+            }
+        }
+
         this.processInput = () => {
 
         }
 
         this.update = () => {
-
+            this.camera.update(this.dt * 0.001)
         }
 
         this.draw = () => {
@@ -58,6 +69,7 @@ export default class Game {
         }
 
         this.loop = () => {
+            this.computeDeltaTime()
             this.processInput()
             this.update()
             this.draw()
