@@ -33,6 +33,7 @@ export default class Game {
         // Renderer
         this.renderer = new THREE.WebGLRenderer({canvas: this.canvas})
         this.renderer.setSize(this.sizes.width, this.sizes.height)
+        this.renderer.setPixelRatio(window.devicePixelRatio);
 
         window.addEventListener("resize", () => {
             this.sizes.width = window.innerWidth

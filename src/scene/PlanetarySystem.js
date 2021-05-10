@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import sunVertexShader from '../shader/sun.vert'
 import sunFragmentShader from '../shader/sun.frag'
+import Planet from './planet'
 
 export default class PlanetarySystem extends THREE.Group {
     constructor() {
@@ -34,6 +35,15 @@ export default class PlanetarySystem extends THREE.Group {
             return new THREE.Points(geometry, material)
         }
 
+        this.createPlanet = (size) => {
+            const mesh = new Planet(size)
+            mesh.translateX(3)
+
+            return mesh
+        }
+
         this.add(this.createSun(1))
+        this.add(this.createStars(5000, 40))
+        this.add(this.createPlanet(0.3))
     }
 }
