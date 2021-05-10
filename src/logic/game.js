@@ -37,6 +37,7 @@ export default class Game {
             this.sizes.width = window.innerWidth
             this.sizes.height = window.innerHeight
             this.camera.aspect = this.sizes.width / this.sizes.height
+            this.camera.updateProjectionMatrix()
             this.renderer.setSize(this.sizes.width, this.sizes.height)
         })
 

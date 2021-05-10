@@ -1,4 +1,6 @@
 import * as THREE from 'three'
+import sunVertexShader from '../shader/sun.vs'
+import sunFragmentShader from '../shader/sun.fs'
 
 export default class PlanetarySystem extends THREE.Group {
     constructor() {
@@ -7,11 +9,10 @@ export default class PlanetarySystem extends THREE.Group {
 
         this.createSun = (size) => {
             const geometry = new THREE.SphereBufferGeometry(size, 50, 50)
-            const material = new THREE.MeshBasicMaterial({color: 0xff0000})
-            //const material = THREE.RawShaderMaterial({
-            //vertexShader: `vertexShader`,
-            //fragmentShader: `fragmentShader`
-            //})
+            const material = new THREE.RawShaderMaterial({
+                vertexShader: sunVertexShader,
+                fragmentShader: sunFragmentShader
+            })
 
             return new THREE.Mesh(geometry, material)
         }
