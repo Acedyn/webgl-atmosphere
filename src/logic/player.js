@@ -6,8 +6,8 @@ export default class Player extends THREE.PerspectiveCamera {
 
         this.force = new THREE.Vector3(0, 0, 0)
         this.velocity = new THREE.Vector3(0, 0, 0)
-        this.minVel = new THREE.Vector3(-2, -2, -2)
-        this.maxVel = new THREE.Vector3(2, 2, 2)
+        this.minVel = new THREE.Vector3(-4, -4, -4)
+        this.maxVel = new THREE.Vector3(4, 4, 4)
         this.friction = 0.92
 
         this.rotationalDirection = new THREE.Vector3(0, 0, 0)

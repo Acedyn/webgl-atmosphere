@@ -15,7 +15,9 @@ export default class PlanetarySystem extends THREE.Group {
                 fragmentShader: sunFragmentShader
             })
 
-            return new THREE.Mesh(geometry, material)
+            const mesh = new THREE.Mesh(geometry, material)
+            mesh.translateX(3)
+            return mesh
         }
 
         this.createStars = (count, size) => {
@@ -37,9 +39,11 @@ export default class PlanetarySystem extends THREE.Group {
 
         this.createPlanet = (size) => {
             const mesh = new Planet(size)
-            mesh.translateX(3)
-
-            return mesh
+            const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 0.8)
+            const group = new THREE.Group()
+            group.add(mesh)
+            group.add(light)
+            return group
         }
 
         this.add(this.createSun(1))
