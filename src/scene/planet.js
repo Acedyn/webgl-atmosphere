@@ -13,25 +13,20 @@ export default class Planet extends THREE.Mesh {
                 position.z = this.geometry.attributes.position.array[i + 2]
 
                 const amplitude = perlinNoise3D(position)
-                this.geometry.attributes.color.array[i] = amplitude
-                this.geometry.attributes.color.array[i + 1] = amplitude
-                this.geometry.attributes.color.array[i + 2] = amplitude
+                amplitude.multiplyScalar(0.05)
 
                 const normalX = this.geometry.attributes.normal.array[i]
-                this.geometry.attributes.position.array[i] += normalX * amplitude * 0
+                this.geometry.attributes.position.array[i] += normalX * amplitude.x
                 const normalY = this.geometry.attributes.normal.array[i + 1]
-                this.geometry.attributes.position.array[i + 1] += normalY * amplitude * 0
+                this.geometry.attributes.position.array[i + 1] += normalY * amplitude.x
                 const normalZ = this.geometry.attributes.normal.array[i + 2]
-                this.geometry.attributes.position.array[i + 2] += normalZ * amplitude * 0
+                this.geometry.attributes.position.array[i + 2] += normalZ * amplitude.x
             }
         }
 
 
         this.geometry = new THREE.SphereBufferGeometry(size, 100, 100)
-        const colors = new Float32Array(this.geometry.attributes.position.count * 3)
-        this.geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
         this.generateHeight()
         this.material = new THREE.MeshStandardMaterial()
-        this.material.vertexColors = true
     }
 }

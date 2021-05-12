@@ -48,11 +48,13 @@ export default class Player extends THREE.PerspectiveCamera {
         window.addEventListener("mousedown", (e) => {
             this.isDraging = true
             this.mouseStart.set(e.x / window.innerWidth, e.y / window.innerHeight)
+            this.mouseEnd.set(e.x / window.innerWidth, e.y / window.innerHeight)
         })
 
         window.addEventListener("touchstart", (e) => {
             this.isDraging = true
             this.mouseStart.set(e.touches[0].clientX / window.innerWidth, e.touches[0].clientY / window.innerHeight)
+            this.mouseEnd.set(e.touches[0].clientX / window.innerWidth, e.touches[0].clientY / window.innerHeight)
         })
 
         window.addEventListener("mouseup", (e) => {
