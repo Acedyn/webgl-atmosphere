@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import perlinNoise3D from '../utils/noise'
+import planetVertexShader from '../shader/planet.vert'
+import planetFragmentShader from '../shader/planet.frag'
 
 export default class Planet extends THREE.Mesh {
     constructor(size) {
@@ -24,9 +26,16 @@ export default class Planet extends THREE.Mesh {
             }
         }
 
-
         this.geometry = new THREE.SphereBufferGeometry(size, 100, 100)
         this.generateHeight()
-        this.material = new THREE.MeshStandardMaterial()
+        this.geometry.computeVertexNormals()
+        this.uniforms = {
+            sunPosition: new THREE.Uniform(new THREE.Vector3(0.0, 0.0, 0.0))
+        }
+        this.material = new THREE.RawShaderMaterial({
+            vertexShader: planetVertexShader,
+            fragmentShader: planetFragmentShader,
+            uniforms: this.uniforms
+        })
     }
 }

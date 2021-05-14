@@ -70,7 +70,7 @@ export default class PlanetarySystem extends THREE.Group {
         this.add(this.createStars(20000, 40))
         this.planets = []
         for(let i = 0; i < 12; i++) {
-            const planetSize = Math.random() * 0.4 + 0.2
+            const planetSize = Math.random() * 0.5 + 0.2
             this.add(this.createPlanet(planetSize))
         }
     }
