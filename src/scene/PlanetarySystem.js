@@ -16,7 +16,6 @@ export default class PlanetarySystem extends THREE.Group {
             })
 
             const mesh = new THREE.Mesh(geometry, material)
-            mesh.translateX(3)
             return mesh
         }
 
@@ -34,6 +33,8 @@ export default class PlanetarySystem extends THREE.Group {
             geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3))
             // Create the material
             const material = new THREE.PointsMaterial({color: 0x888888})
+            material.sizeAttenuation = false
+            material.size = 2
             return new THREE.Points(geometry, material)
         }
 
@@ -43,11 +44,34 @@ export default class PlanetarySystem extends THREE.Group {
             const group = new THREE.Group()
             group.add(mesh)
             group.add(light)
+            group.randomDistance = Math.random() * 15 + 5
+            group.randomAngle = Math.random() * 2 * Math.PI
+            group.rotationSpeed = Math.random() * 0.2 + 0.05
+            const randomPositionX = Math.sin(group.randomAngle) * group.randomDistance
+            const randomPositionZ = Math.cos(group.randomAngle) * group.randomDistance
+            group.translateX(randomPositionX)
+            group.translateZ(randomPositionZ)
             return group
         }
 
+        this.update = (dt) => {
+            this.children.forEach((child) => {
+                if(child.type == "Group"){
+                    child.randomAngle += child.rotationSpeed * dt
+                    const randomPositionX = Math.sin(child.randomAngle) * child.randomDistance
+                    const randomPositionZ = Math.cos(child.randomAngle) * child.randomDistance
+                    child.position.x = randomPositionX
+                    child.position.z = randomPositionZ
+                }
+            })
+        }
+
         this.add(this.createSun(1))
-        this.add(this.createStars(5000, 40))
-        this.add(this.createPlanet(0.3))
+        this.add(this.createStars(20000, 40))
+        this.planets = []
+        for(let i = 0; i < 12; i++) {
+            const planetSize = Math.random() * 0.4 + 0.2
+            this.add(this.createPlanet(planetSize))
+        }
     }
 }
