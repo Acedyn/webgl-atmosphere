@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js';
-import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import {AtmospherePass} from '../shader/atomsphere';
 import PlanetarySystem from "../scene/PlanetarySystem"
 import Player from "./player"
