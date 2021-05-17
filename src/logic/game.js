@@ -1,4 +1,8 @@
 import * as THREE from 'three'
+import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js';
+import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import {AtmospherePass} from '../shader/atomsphere';
 import PlanetarySystem from "../scene/PlanetarySystem"
 import Player from "./player"
 
@@ -27,13 +31,18 @@ export default class Game {
 
         // Camera
         this.camera = new Player(50, this.sizes.width / this.sizes.height)
-        this.camera.position.z = 3
+        this.camera.position.z = 15
+        this.camera.position.y = 8
+        this.camera.rotateX(-Math.PI * 0.15)
         this.scene.add(this.camera)
 
         // Renderer
         this.renderer = new THREE.WebGLRenderer({canvas: this.canvas})
         this.renderer.setSize(this.sizes.width, this.sizes.height)
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setPixelRatio(window.devicePixelRatio)
+        this.composer = new EffectComposer(this.renderer)
+        this.composer.addPass(new RenderPass(this.scene, this.camera))
+        this.composer.addPass(new AtmospherePass(this.scene, this.camera))
 
         window.addEventListener("resize", () => {
             this.sizes.width = window.innerWidth
@@ -67,7 +76,7 @@ export default class Game {
         }
 
         this.draw = () => {
-            this.renderer.render(this.scene, this.camera)
+            this.composer.render(this.scene, this.camera)
         }
 
         this.loop = () => {
