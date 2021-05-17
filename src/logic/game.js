@@ -31,8 +31,8 @@ export default class Game {
         // Camera
         this.camera = new Player(50, this.sizes.width / this.sizes.height)
         this.camera.position.z = 15
-        this.camera.position.y = 8
-        this.camera.rotateX(-Math.PI * 0.15)
+        // this.camera.position.y = 8
+        // this.camera.rotateX(-Math.PI * 0.15)
         this.scene.add(this.camera)
 
         // Renderer
@@ -41,7 +41,7 @@ export default class Game {
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.composer = new EffectComposer(this.renderer)
         this.composer.addPass(new RenderPass(this.scene, this.camera))
-        this.composer.addPass(new AtmospherePass(this.scene, this.camera))
+        this.composer.addPass(new AtmospherePass(this.scene, this.camera, this.planetarySystem))
 
         window.addEventListener("resize", () => {
             this.sizes.width = window.innerWidth

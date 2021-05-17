@@ -44,6 +44,7 @@ export default class PlanetarySystem extends THREE.Group {
             const group = new THREE.Group()
             group.add(mesh)
             group.add(light)
+            group.size = size
             group.randomDistance = Math.random() * 15 + 5
             group.randomAngle = Math.random() * 2 * Math.PI
             group.rotationSpeed = Math.random() * 0.2 + 0.05
@@ -56,7 +57,7 @@ export default class PlanetarySystem extends THREE.Group {
 
         this.update = (dt) => {
             this.children.forEach((child) => {
-                if(child.type == "Group"){
+                if (child.type == "Group") {
                     child.randomAngle += child.rotationSpeed * dt
                     const randomPositionX = Math.sin(child.randomAngle) * child.randomDistance
                     const randomPositionZ = Math.cos(child.randomAngle) * child.randomDistance
@@ -66,10 +67,20 @@ export default class PlanetarySystem extends THREE.Group {
             })
         }
 
+        this.getPlanetsInfo = () => {
+            const planets = new Array()
+            this.children.forEach((child) => {
+                if (child.type == "Group") {
+                    planets.push(new THREE.Vector4(child.position.x, child.position.y, child.position.z, child.size))
+                }
+            })
+            return planets
+        }
+
         this.add(this.createSun(1))
         this.add(this.createStars(20000, 40))
         this.planets = []
-        for(let i = 0; i < 12; i++) {
+        for (let i = 0; i < 12; i++) {
             const planetSize = Math.random() * 0.5 + 0.2
             this.add(this.createPlanet(planetSize))
         }

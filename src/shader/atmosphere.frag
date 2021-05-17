@@ -2,6 +2,7 @@
 varying vec2 vUv;
 uniform sampler2D tColor;
 uniform sampler2D tDepth;
+uniform vec4 planets[PLANET_COUNT] ;
 
 uniform vec3 cameraFront;
 uniform vec3 cameraUp;
@@ -9,8 +10,7 @@ uniform float nearClip;
 uniform float farClip;
 uniform float aspect;
 uniform float focal;
-uniform float filmWidth;
-uniform float filmHeight;
+uniform vec2 filmSize;
 
 #include <packing>
 float getDepth( const in vec2 screenPosition ) {
@@ -38,6 +38,23 @@ void main() {
     {
         gl_FragColor = vec4(cameraFront, 1.0);
     }
+    
+    vec2 vUv = vUv - vec2(0.5, 0.5);
+    vec3 cameraFront = normalize(cameraFront);
+    vec3 cameraUp = normalize(cameraUp);
+    vec3 cameraSide = normalize(cross(cameraFront, cameraUp));
+    vec3 ray = normalize(cameraFront * focal + (cameraSide * filmSize.x * vUv.x) + (cameraUp * filmSize.y * vUv.y));
 
-    vec3 ray = cameraFront * focal;
+    for(int i = 0; i < PLANET_COUNT; i++)
+    {
+        vec3 spherePosition = vec3(planets[i]);
+        float sphereDistance = distance(spherePosition, cameraPosition);
+        vec3 sphereDirection = spherePosition - cameraPosition;
+        float tangentDistance = dot(sphereDirection, ray);
+        float pos = distance(cameraPosition + ray*tangentDistance, spherePosition);
+        if(pos < planets[i].w)
+        {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+    }
 }
