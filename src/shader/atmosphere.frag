@@ -28,6 +28,23 @@ float getViewZ( const in float depth ) {
     #endif
 }
 
+vec2 sphereIntersect(vec3 spherePosition, float sphereRadius, vec3 rayOrigin, vec3 rayDirection)
+{
+    float sphereDistance = distance(spherePosition, rayOrigin);
+    vec3 sphereDirection = spherePosition - rayOrigin;
+    float tangentDistance = dot(sphereDirection, rayDirection);
+    float hitDistance = distance(rayOrigin + rayDirection * tangentDistance, spherePosition);
+
+    if(hitDistance > sphereRadius)
+    {
+        return vec2(-1.0, -1.0);
+    }
+
+    float firstHitDistance = tangentDistance - sqrt(pow(sphereRadius, 2.0) - pow(hitDistance, 2.0));
+    float secondHitDistance = tangentDistance + sqrt(pow(sphereRadius, 2.0) - pow(hitDistance, 2.0));
+    return vec2(firstHitDistance, secondHitDistance);
+}
+
 void main() {
     float viewZ = -perspectiveDepthToViewZ(unpackRGBAToDepth(texture2D( tDepth, vUv )), nearClip, farClip);
     if(viewZ >= 50.0)
@@ -47,14 +64,10 @@ void main() {
 
     for(int i = 0; i < PLANET_COUNT; i++)
     {
-        vec3 spherePosition = vec3(planets[i]);
-        float sphereDistance = distance(spherePosition, cameraPosition);
-        vec3 sphereDirection = spherePosition - cameraPosition;
-        float tangentDistance = dot(sphereDirection, ray);
-        float pos = distance(cameraPosition + ray*tangentDistance, spherePosition);
-        if(pos < planets[i].w)
+        vec2 intersection = sphereIntersect(vec3(planets[i]), planets[i].w, cameraPosition, ray);
+        if(intersection.x > 0.0)
         {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4((intersection.y - intersection.x)/planets[i].x, 0.0, 0.0, 1.0);
         }
     }
 }

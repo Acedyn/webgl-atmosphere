@@ -31,8 +31,8 @@ export default class Game {
         // Camera
         this.camera = new Player(50, this.sizes.width / this.sizes.height)
         this.camera.position.z = 15
-        // this.camera.position.y = 8
-        // this.camera.rotateX(-Math.PI * 0.15)
+        this.camera.position.y = 8
+        this.camera.rotateX(-Math.PI * 0.15)
         this.scene.add(this.camera)
 
         // Renderer
