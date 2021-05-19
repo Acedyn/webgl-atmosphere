@@ -1,5 +1,6 @@
 #include <common>
 varying vec2 vUv;
+varying vec3 vPosition;
 uniform sampler2D tColor;
 uniform sampler2D tDepth;
 uniform vec4 planets[PLANET_COUNT] ;
@@ -42,7 +43,7 @@ vec2 sphereIntersect(vec3 spherePosition, float sphereRadius, vec3 rayOrigin, ve
 
     float firstHitDistance = tangentDistance - sqrt(pow(sphereRadius, 2.0) - pow(hitDistance, 2.0));
     float secondHitDistance = tangentDistance + sqrt(pow(sphereRadius, 2.0) - pow(hitDistance, 2.0));
-    return vec2(min(firstHitDistance, depht), min(secondHitDistance, depht));
+    return vec2(min(firstHitDistance, 100.0), min(secondHitDistance, depht));
 }
 
 float scatterLight(vec3 rayOrigin, vec3 rayDirection, float rayLenght, int scatterIteration, vec3 planetPosition, float planetRadius, vec3 sunPosition)
@@ -62,14 +63,14 @@ float scatterLight(vec3 rayOrigin, vec3 rayDirection, float rayLenght, int scatt
 }
 
 void main() {
-    float viewZ = -perspectiveDepthToViewZ(unpackRGBAToDepth(texture2D( tDepth, vUv )), nearClip, farClip);
+    float viewZ = texture2D( tDepth, vUv ).x;
     if(viewZ >= 50.0)
     {
         gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
     }
     else
     {
-        gl_FragColor = vec4(cameraFront, 1.0);
+        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
     }
     
     vec2 vUv = vUv - vec2(0.5, 0.5);
@@ -87,4 +88,5 @@ void main() {
             gl_FragColor = vec4((intersection.y - intersection.x)/(atmosphereRadius * 2.0), 0.0, 0.0, 1.0);
         }
     }
+    // gl_FragColor = vec4(vec3(viewZ), 1.0);
 }

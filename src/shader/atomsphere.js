@@ -1,10 +1,8 @@
 import {
     Color,
-    MeshDepthMaterial,
     NearestFilter,
-    NoBlending,
-    RGBADepthPacking,
     ShaderMaterial,
+    RawShaderMaterial,
     UniformsUtils,
     WebGLRenderTarget,
     Vector3,
@@ -13,6 +11,8 @@ import {
 import {Pass} from 'three/examples/jsm/postprocessing/Pass';
 import atmosphereVertexShader from '../shader/atmosphere.vert'
 import atmosphereFragmentShader from '../shader/atmosphere.frag'
+import depthVertexShader from '../shader/depth.vert'
+import depthFragmentShader from '../shader/depth.frag'
 
 /**
  * Depth-of-field post-process with bokeh shader
@@ -38,13 +38,22 @@ class AtmospherePass extends Pass {
             magFilter: NearestFilter
         });
 
-        this.renderTargetDepth.texture.name = 'BokehPass.depth';
+        this.renderTargetDepth.texture.name = 'AtmospherePass.depth';
 
         // depth material
+        const depthShader = {
+            uniforms: {
+                'cameraPosition': {value: camera.position},
+            },
+            vertexShader: depthVertexShader,
+            fragmentShader: depthFragmentShader,
+        }
 
-        this.materialDepth = new MeshDepthMaterial();
-        this.materialDepth.depthPacking = RGBADepthPacking;
-        this.materialDepth.blending = NoBlending;
+        this.materialDepth = new RawShaderMaterial({
+            uniforms: depthShader.uniforms,
+            vertexShader: depthShader.vertexShader,
+            fragmentShader: depthShader.fragmentShader
+        });
 
         // atmosphere material
         const planetsInfo = planets.getPlanetsInfo()
@@ -86,7 +95,7 @@ class AtmospherePass extends Pass {
         atmosphereUniforms['cameraFront'].value.applyQuaternion(camera.quaternion).normalize()
         atmosphereUniforms['planets'].value = planetsInfo
 
-        this.materialBokeh = new ShaderMaterial({
+        this.materialAtmosphere = new ShaderMaterial({
             defines: Object.assign({}, atmosphereShader.defines),
             uniforms: atmosphereUniforms,
             vertexShader: atmosphereShader.vertexShader,
@@ -96,7 +105,7 @@ class AtmospherePass extends Pass {
         this.uniforms = atmosphereUniforms;
         this.needsSwap = false;
 
-        this.fsQuad = new Pass.FullScreenQuad(this.materialBokeh);
+        this.fsQuad = new Pass.FullScreenQuad(this.materialAtmosphere);
 
         this._oldClearColor = new Color();
 
