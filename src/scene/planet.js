@@ -15,7 +15,7 @@ export default class Planet extends THREE.Mesh {
                 position.z = this.geometry.attributes.position.array[i + 2]
 
                 const amplitude = perlinNoise3D(position)
-                amplitude.multiplyScalar(0.05)
+                amplitude.multiplyScalar(0.2)
 
                 const normalX = this.geometry.attributes.normal.array[i]
                 this.geometry.attributes.position.array[i] += normalX * amplitude.x

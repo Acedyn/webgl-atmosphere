@@ -28,11 +28,11 @@ float getViewZ( const in float depth ) {
     #endif
 }
 
-vec2 sphereIntersect(vec3 spherePosition, float sphereRadius, vec3 rayOrigin, vec3 rayDirection)
+vec2 sphereIntersect(vec3 spherePosition, float sphereRadius, vec3 rayOrigin, vec3 rayDirection, float depht)
 {
     float sphereDistance = distance(spherePosition, rayOrigin);
     vec3 sphereDirection = spherePosition - rayOrigin;
-    float tangentDistance = dot(sphereDirection, rayDirection);
+    float tangentDistance = dot(sphereDirection, normalize(rayDirection));
     float hitDistance = distance(rayOrigin + rayDirection * tangentDistance, spherePosition);
 
     if(hitDistance > sphereRadius)
@@ -42,7 +42,23 @@ vec2 sphereIntersect(vec3 spherePosition, float sphereRadius, vec3 rayOrigin, ve
 
     float firstHitDistance = tangentDistance - sqrt(pow(sphereRadius, 2.0) - pow(hitDistance, 2.0));
     float secondHitDistance = tangentDistance + sqrt(pow(sphereRadius, 2.0) - pow(hitDistance, 2.0));
-    return vec2(firstHitDistance, secondHitDistance);
+    return vec2(min(firstHitDistance, depht), min(secondHitDistance, depht));
+}
+
+float scatterLight(vec3 rayOrigin, vec3 rayDirection, float rayLenght, int scatterIteration, vec3 planetPosition, float planetRadius, vec3 sunPosition)
+{
+    vec3 scatterPoint = rayOrigin;
+    float stepSize = rayLenght / float(scatterIteration - 1);
+    for(int i = 0; i < scatterIteration; i++)
+    {
+        // Get the distance from the scatter point to the atmosphere surface along the sun direction
+        // float sunRayLenght = sphereIntersect(planetPosition, planetRadius, scatterPoint, normalize(scatterPoint - planetPosition), 1000.0).x;
+        // Get the density along the ray that points to the sun
+        // Get the density along the ray that points the the camera
+        // Get the density of the point
+        scatterPoint += normalize(rayDirection) * stepSize;
+    }
+    return 1.0;
 }
 
 void main() {
@@ -64,10 +80,11 @@ void main() {
 
     for(int i = 0; i < PLANET_COUNT; i++)
     {
-        vec2 intersection = sphereIntersect(vec3(planets[i]), planets[i].w, cameraPosition, ray);
+        float atmosphereRadius = planets[i].w * 1.5;
+        vec2 intersection = sphereIntersect(vec3(planets[i]), atmosphereRadius, cameraPosition, ray, viewZ);
         if(intersection.x > 0.0)
         {
-            gl_FragColor = vec4((intersection.y - intersection.x)/planets[i].x, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4((intersection.y - intersection.x)/(atmosphereRadius * 2.0), 0.0, 0.0, 1.0);
         }
     }
 }
