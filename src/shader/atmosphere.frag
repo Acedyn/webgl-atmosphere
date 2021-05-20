@@ -57,15 +57,17 @@ float scatterLight(vec3 rayOrigin, vec3 rayDirection, float rayLenght, int scatt
     for(int i = 0; i < scatterIteration; i++)
     {
         // Get the distance from the scatter point to the atmosphere surface along the sun direction
-        float sunRayLenght = sphereIntersect(planetPosition, planetRadius, scatterPoint, normalize(scatterPoint - planetPosition), 1000.0).x;
+        float sunRayLenght = 1.0- sphereIntersect(planetPosition, planetRadius, scatterPoint, normalize(scatterPoint - sunPosition), 1000.0).x / planetRadius;
+        // if(sunRayLenght < 0.0) { sunRayLenght = 0.2; }
+        sunRayLenght = 1.0 - pow(sunRayLenght*0.4, 1.0);
         float localDensity = getPointDensity(scatterPoint, planetPosition, planetRadius);
         // Get the density along the ray that points to the sun
         // Get the density along the ray that points the the camera
         // Get the density of the point
         scatterPoint += normalize(rayDirection) * stepSize;
-        accumulatedLight += localDensity * stepSize;
+        accumulatedLight += sunRayLenght;
     }
-    return accumulatedLight;
+    return accumulatedLight / float(scatterIteration);
 }
 
 float getRayDensity(vec3 rayOrigin, vec3 rayDirection, float rayLenght, float planetPosition, float planetRadius)
@@ -111,7 +113,7 @@ void main() {
         float scatteredLight = scatterLight(hitPos1, ray, intersection.y - intersection.x, 5, planets[i].xyz, atmosphereRadius, vec3(0.0, 0.0, 0.0));
         if(intersection.x > 0.0 && intersection.x < viewZ)
         {
-            vec3 atmosphereColor = vec3(pow((intersection.y - intersection.x)/(atmosphereRadius * 2.0), 4.0));
+            vec3 atmosphereColor = vec3(pow((intersection.y - intersection.x)/(atmosphereRadius * 2.0), 5.0) * scatteredLight * 5.0);
             if(rgb2hsv(outColor.xyz).z < atmosphereColor.x)
             {
                 outColor = mix(vec4(atmosphereColor, 1.0), outColor, 0.5);
