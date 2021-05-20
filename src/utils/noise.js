@@ -78,7 +78,12 @@ export default function perlinNoise3D(position, frequency = 4, octave = 3) {
         const upperB = lerp(random7, random6, uvw.x)
         const upper = lerp(upperA, upperB, uvw.z)
 
-        value += lerp(bottom, upper, uvw.y) * Math.pow(0.5, i)
+        if (i == 0) {
+            value += lerp(bottom, upper, uvw.y) * 0.7
+        }
+        else {
+            value += lerp(bottom, upper, uvw.y) * Math.pow(0.5, i)
+        }
     }
 
     return new THREE.Vector3(value, value, value)

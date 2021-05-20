@@ -89,7 +89,7 @@ vec3 hsv2rgb(vec3 c)
 
 void main() {
     float viewZ = UnpackDepth(texture2D( tDepth, vUv ).xy);
-    viewZ = texture2D( tDepth, vUv ).x * 20.0;
+    // viewZ = texture2D( tDepth, vUv ).x * 20.0;
     vec3 color = texture2D( tColor, vUv ).xyz;
     vec2 vUv = vUv - vec2(0.5, 0.5);
     vec3 cameraFront = normalize(cameraFront);

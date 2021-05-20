@@ -15,6 +15,6 @@ void main()
 {
     float depth = distance(vPosition, cameraPosition);
     gl_FragColor = vec4(vec3(PackDepth(depth), 1.0), 1.0);
-    gl_FragColor = vec4(vec3(depth/20.0), 1.0);
+    // gl_FragColor = vec4(vec3(depth/20.0), 1.0);
 }
 

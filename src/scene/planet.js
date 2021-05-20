@@ -10,12 +10,11 @@ export default class Planet extends THREE.Mesh {
         this.generateHeight = () => {
             for (let i = 0; i < this.geometry.attributes.position.count * 3; i += 3) {
                 const position = new THREE.Vector3(0, 0, 0)
-                const color = new THREE.Vector3(0, 0, 0)
                 position.x = this.geometry.attributes.position.array[i]
                 position.y = this.geometry.attributes.position.array[i + 1]
                 position.z = this.geometry.attributes.position.array[i + 2]
 
-                const clamp = 0.13
+                const clamp = 0.1
                 const amplitude = Math.min(Math.max(perlinNoise3D(position, 4, 2).multiplyScalar(0.2).x, clamp, 0.0))
 
                 const normalX = this.geometry.attributes.normal.array[i]
