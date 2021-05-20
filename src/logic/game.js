@@ -31,8 +31,8 @@ export default class Game {
         // Camera
         this.camera = new Player(50, this.sizes.width / this.sizes.height)
         this.camera.position.z = 20
-        // this.camera.position.y = 8
-        // this.camera.rotateX(-Math.PI * 0.15)
+        this.camera.position.y = 8
+        this.camera.rotateX(-Math.PI * 0.15)
         this.scene.add(this.camera)
 
         // Renderer
@@ -71,7 +71,7 @@ export default class Game {
 
         this.update = () => {
             this.camera.update(this.dt * 0.001)
-            // this.planetarySystem.update(this.dt * 0.001)
+            this.planetarySystem.update(this.dt * 0.001)
         }
 
         this.draw = () => {
