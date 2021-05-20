@@ -74,6 +74,9 @@ export default class PlanetarySystem extends THREE.Group {
                     planets.push(new THREE.Vector4(child.position.x, child.position.y, child.position.z, child.size))
                 }
             })
+            planets.sort((a, b) => {
+                return a.w > b.w;
+            })
             return planets
         }
 
