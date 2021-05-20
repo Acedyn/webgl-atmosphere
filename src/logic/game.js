@@ -71,7 +71,7 @@ export default class Game {
 
         this.update = () => {
             this.camera.update(this.dt * 0.001)
-            this.planetarySystem.update(this.dt * 0.001)
+            //this.planetarySystem.update(this.dt * 0.001)
         }
 
         this.draw = () => {

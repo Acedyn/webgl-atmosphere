@@ -22,6 +22,7 @@ export default class PlanetarySystem extends THREE.Group {
         this.createStars = (count, size) => {
             // Initialize the array of start location
             const vertices = new Float32Array(count * 3)
+            const sprite = new THREE.TextureLoader().load('disc.png');
             // Get a random location for all the stars
             for (let i = 0; i < count; i++) {
                 vertices[i] = (Math.random() - 0.5) * 2 * size
@@ -33,8 +34,12 @@ export default class PlanetarySystem extends THREE.Group {
             geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3))
             // Create the material
             const material = new THREE.PointsMaterial({color: 0x888888})
-            material.sizeAttenuation = false
-            material.size = 2
+            material.color.setHSL(1.0, 1.0, 1.0);
+            material.sizeAttenuation = true
+            material.size = 0.15
+            material.alphaTest = 0.001
+            material.transparent = true
+            material.map = sprite;
             return new THREE.Points(geometry, material)
         }
 
@@ -45,7 +50,7 @@ export default class PlanetarySystem extends THREE.Group {
             group.add(mesh)
             group.add(light)
             group.size = size
-            group.randomDistance = Math.random() * 15 + 5
+            group.randomDistance = Math.random() * 15 + 8
             group.randomAngle = Math.random() * 2 * Math.PI
             group.rotationSpeed = Math.random() * 0.2 + 0.05
             const randomPositionX = Math.sin(group.randomAngle) * group.randomDistance
@@ -80,11 +85,11 @@ export default class PlanetarySystem extends THREE.Group {
             return planets
         }
 
-        this.add(this.createSun(1))
+        this.add(this.createSun(3.0))
         this.add(this.createStars(20000, 40))
         this.planets = []
         for (let i = 0; i < 12; i++) {
-            const planetSize = Math.random() * 0.5 + 0.2
+            const planetSize = Math.random() * 1.5 + 0.2
             this.add(this.createPlanet(planetSize))
         }
     }
