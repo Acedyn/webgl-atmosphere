@@ -49,25 +49,24 @@ float getPointDensity(vec3 pointPosition, vec3 planetPosition, float planetRadiu
     return planetRadius - centerDistance;
 }
 
-float scatterLight(vec3 rayOrigin, vec3 rayDirection, float rayLenght, int scatterIteration, vec3 planetPosition, float planetRadius, vec3 sunPosition)
+vec2 scatterLight(vec3 rayOrigin, vec3 rayDirection, float rayLenght, int scatterIteration, vec3 planetPosition, float planetRadius, vec3 sunPosition)
 {
     vec3 scatterPoint = rayOrigin;
     float stepSize = rayLenght / float(scatterIteration - 1);
     float accumulatedLight = 0.0;
+    float accumulatedColor = 0.0;
     for(int i = 0; i < scatterIteration; i++)
     {
         // Get the distance from the scatter point to the atmosphere surface along the sun direction
         float sunRayLenght = 1.0- sphereIntersect(planetPosition, planetRadius, scatterPoint, normalize(scatterPoint - sunPosition), 1000.0).x / planetRadius;
-        // if(sunRayLenght < 0.0) { sunRayLenght = 0.2; }
         sunRayLenght = 1.0 - pow(sunRayLenght*0.4, 1.0) * 0.8;
         float localDensity = getPointDensity(scatterPoint, planetPosition, planetRadius);
-        // Get the density along the ray that points to the sun
-        // Get the density along the ray that points the the camera
-        // Get the density of the point
+        float angle = 1.0 - pow(dot(normalize(scatterPoint - sunPosition), normalize(scatterPoint - planetPosition)) + 1.0, 0.3) / 2.0;
+        accumulatedColor += angle;
         scatterPoint += normalize(rayDirection) * stepSize;
         accumulatedLight += sunRayLenght;
     }
-    return accumulatedLight / float(scatterIteration);
+    return vec2(accumulatedLight / float(scatterIteration), accumulatedColor / float(scatterIteration));
 }
 
 vec3 rgb2hsv(vec3 c)
@@ -101,24 +100,28 @@ void main() {
     vec4 outColor = vec4(vec3(color), 1.0);
     for(int i = 0; i < PLANET_COUNT; i++)
     {
-        float atmosphereRadius = planets[i].w * 2.0 + 0.2;
+        float atmosphereRadius = planets[i].w * 1.6 + 0.2;
         vec2 intersection = sphereIntersect(planets[i].xyz, atmosphereRadius, cameraPosition, ray, viewZ);
         vec3 hitPos1 = cameraPosition + ray * intersection.x;
         vec3 hitPos2 = cameraPosition + ray * intersection.y;
-        float scatteredLight = scatterLight(hitPos1, ray, intersection.y - intersection.x, 5, planets[i].xyz, atmosphereRadius, vec3(0.0, 0.0, 0.0));
+        vec2 scatteredLight = scatterLight(hitPos1, ray, intersection.y - intersection.x, 5, planets[i].xyz, atmosphereRadius, vec3(0.0, 0.0, 0.0));
+        float lightIntensity = scatteredLight.x;
+        float lightColor = scatteredLight.y;
         if(intersection.x > 0.0 && intersection.x < viewZ)
         {
-            vec3 atmosphereColorA = vec3(pow((intersection.y - intersection.x)/(atmosphereRadius * 2.0) * scatteredLight * 2.2, 8.0));
-            vec3 atmosphereColorB = vec3(pow(min((intersection.y - intersection.x)/(atmosphereRadius * 2.0), scatteredLight * 2.0), 3.0));
+            vec3 atmosphereColorA = vec3(pow((intersection.y - intersection.x)/(atmosphereRadius * 2.0) * lightIntensity * 2.2, 8.0));
+            vec3 atmosphereColorB = vec3(pow(min((intersection.y - intersection.x)/(atmosphereRadius * 2.0), lightIntensity * 2.0), 3.0));
             vec3 atmosphereColor = clamp(mix(atmosphereColorA, atmosphereColorB * 2.0, 0.5), vec3(0.0), vec3(1.0));
-            if(rgb2hsv(outColor.xyz).z < atmosphereColor.x)
+            atmosphereColor = rgb2hsv(atmosphereColor);
+            // Add controls for color
+            atmosphereColor.x = mix(1.1, 0.2, lightColor);
+            atmosphereColor.y = pow(atmosphereColor.z, 1.0) * 1.0;
+            // atmosphereColor.z = pow(atmosphereColor.z, 2.0) * 3.0;
+            atmosphereColor = hsv2rgb(atmosphereColor);
+            if(rgb2hsv(outColor.xyz).z < rgb2hsv(atmosphereColor.xyz).z)
             {
                 outColor = mix(vec4(atmosphereColor, 1.0), outColor, 0.5);
             }
-            //outColor = mix(vec4(vec3(atmosphereColor), 1.0), outColor, 0.5);
-            //outColor = vec4(vec3(atmosphereColor), 1.0);
-            // gl_FragColor = vec4(vec3(intersection.x/20.0), 1.0);
-            // gl_FragColor = vec4(vec3(viewZ/20.0), 1.0);
         }
     }
     gl_FragColor = outColor;

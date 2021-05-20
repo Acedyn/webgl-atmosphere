@@ -34,7 +34,7 @@ export default class PlanetarySystem extends THREE.Group {
             geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3))
             // Create the material
             const material = new THREE.PointsMaterial({color: 0x888888})
-            material.color.setHSL(1.0, 1.0, 1.0);
+            material.color.setHSL(0.9, 1.0, 1.0);
             material.sizeAttenuation = true
             material.size = 0.15
             material.alphaTest = 0.001
